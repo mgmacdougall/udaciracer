@@ -21,7 +21,6 @@ async function onPageLoad() {
     });
 
     getRacers().then((racers) => {
-			console.log(racers)
       const html = renderRacerCars(racers);
       renderAt("#racers", html);
     });
