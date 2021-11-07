@@ -38,7 +38,7 @@ function setupClickHandlers() {
 
       // Race track form field
       if (target.matches(".card.track")) {
-        handleSelectTrack(target);
+        handleSelectTrack(target); // done
       }
 
       // Podracer form field
@@ -72,23 +72,37 @@ async function delay(ms) {
   }
 }
 // ^ PROVIDED CODE ^ DO NOT REMOVE
+const setupRaceDetails = async () => {
+  const { track_id, player_id } = store; // TODO - Get player_id and track_id from the store
 
+  try {
+    const data = await fetch("http://localhost:8000/api/races", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        track_id: parseInt(track_id),
+        player_id: parseInt(player_id),
+      }),
+    });
+    const result = await data.json();
+    const { ID } = result;
+    store.race_id = ID; // TODO - update the store with the race id
+  } catch (err) {
+    console.log(err);
+  }
+};
 // This async function controls the flow of the race, add the logic and error handling
 async function handleCreateRace() {
   // render starting UI
-  renderAt("#race", renderRaceStartView());
+  // renderAt("#race", renderRaceStartView());
+  //TODO - invoke the API call to create the race, then save the result
+  await setupRaceDetails(); // The race has been created, now start the countdown
 
-  // TODO - Get player_id and track_id from the store
-
-  // const race = TODO - invoke the API call to create the race, then save the result
-
-  // TODO - update the store with the race id
-
-  // The race has been created, now start the countdown
   // TODO - call the async function runCountdown
-
+  await runCountdown();
   // TODO - call the async function startRace
-
   // TODO - call the async function runRace
 }
 
@@ -119,11 +133,18 @@ async function runCountdown() {
 
     return new Promise((resolve) => {
       // TODO - use Javascript's built in setInterval method to count down once per second
-
-      // run this DOM manipulation to decrement the countdown for the user
-      document.getElementById("big-numbers").innerHTML = --timer;
-
-      // TODO - if the countdown is done, clear the interval, resolve the promise, and return
+      const timerInterval = setInterval(() => {
+        if (timer === 0) {
+          resolve();
+          clearInterval(timerInterval);
+        } else {
+          // run this DOM manipulation to decrement the countdown for the user
+          // renderCountdown(timer)
+          console.log('here')
+          // document.getElementById("big-numbers").innerHTML = "timer";
+          timer--;
+        }
+      }, 1000);
     });
   } catch (error) {
     console.log(error);
@@ -131,8 +152,6 @@ async function runCountdown() {
 }
 
 function handleSelectPodRacer(target) {
-  console.log("selected a pod", target.id);
-
   // remove class selected from all racer options
   const selected = document.querySelector("#racers .selected");
   if (selected) {
@@ -143,11 +162,10 @@ function handleSelectPodRacer(target) {
   target.classList.add("selected");
 
   // TODO - save the selected racer to the store
+  store["player_id"] = target.id; // done
 }
 
 function handleSelectTrack(target) {
-  console.log("selected a track", target.id);
-
   // remove class selected from all track options
   const selected = document.querySelector("#tracks .selected");
   if (selected) {
@@ -158,6 +176,7 @@ function handleSelectTrack(target) {
   target.classList.add("selected");
 
   // TODO - save the selected track id to the store
+  store.track_id = target.id; // done
 }
 
 function handleAccelerate() {
@@ -327,13 +346,12 @@ function getTracks() {
       "Content-Type": "application/json",
     },
   };
-
   return fetch(`${SERVER}/api/tracks`, options)
     .then((res) => res.json())
     .catch((err) => console.log(err));
 }
 /**
- * 
+ *
  * @returns all the  racers that are available.
  */
 function getRacers() {
