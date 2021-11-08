@@ -133,16 +133,21 @@ async function runCountdown() {
 
     return new Promise((resolve) => {
       // TODO - use Javascript's built in setInterval method to count down once per second
+      const html = renderCountdown(timer);
+      renderAt("#create-race", html);
       const timerInterval = setInterval(() => {
         if (timer === 0) {
+          let h2 = document.querySelector("h2");
+          h2.parentNode.removeChild(h2);
+
+          let nums = document.getElementById("big-numbers");
+          nums.parentNode.removeChild(nums)
           resolve();
           clearInterval(timerInterval);
         } else {
           // run this DOM manipulation to decrement the countdown for the user
-          // renderCountdown(timer)
-          console.log('here')
-          // document.getElementById("big-numbers").innerHTML = "timer";
           timer--;
+          document.getElementById("big-numbers").innerHTML = timer;
         }
       }, 1000);
     });
