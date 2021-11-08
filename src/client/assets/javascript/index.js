@@ -87,8 +87,9 @@ const setupRaceDetails = async () => {
       }),
     });
     const result = await data.json();
-    const { ID } = result;
+    const { ID} = result;
     store.race_id = ID; // TODO - update the store with the race id
+    return result
   } catch (err) {
     console.log(err);
   }
@@ -96,9 +97,9 @@ const setupRaceDetails = async () => {
 // This async function controls the flow of the race, add the logic and error handling
 async function handleCreateRace() {
   // render starting UI
-  // renderAt("#race", renderRaceStartView());
   //TODO - invoke the API call to create the race, then save the result
-  await setupRaceDetails(); // The race has been created, now start the countdown
+  let raceDetails =  await setupRaceDetails(); // The race has been created, now start the countdown
+  renderAt("#race", renderRaceStartView(raceDetails.Track,raceDetails.Cars));
 
   // TODO - call the async function runCountdown
   await runCountdown();
@@ -133,8 +134,8 @@ async function runCountdown() {
 
     return new Promise((resolve) => {
       // TODO - use Javascript's built in setInterval method to count down once per second
-      const html = renderCountdown(timer);
-      renderAt("#create-race", html);
+      // const html = renderCountdown(timer);
+      // renderAt("#create-race", html);
       const timerInterval = setInterval(() => {
         if (timer === 0) {
           let h2 = document.querySelector("h2");
