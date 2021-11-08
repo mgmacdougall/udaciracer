@@ -97,12 +97,10 @@ const setupRaceDetails = async () => {
 // This async function controls the flow of the race, add the logic and error handling
 async function handleCreateRace() {
   // render starting UI
-  //TODO - invoke the API call to create the race, then save the result
-  let raceDetails =  await setupRaceDetails(); // The race has been created, now start the countdown
+ 
+  let raceDetails =  await setupRaceDetails();  //TODO - invoke the API call to create the race, then save the result
   renderAt("#race", renderRaceStartView(raceDetails.Track,raceDetails.Cars));
-
-  // TODO - call the async function runCountdown
-  await runCountdown();
+  await runCountdown(); // TODO - call the async function runCountdown
   // TODO - call the async function startRace
   // TODO - call the async function runRace
 }
@@ -134,8 +132,6 @@ async function runCountdown() {
 
     return new Promise((resolve) => {
       // TODO - use Javascript's built in setInterval method to count down once per second
-      // const html = renderCountdown(timer);
-      // renderAt("#create-race", html);
       const timerInterval = setInterval(() => {
         if (timer === 0) {
           let h2 = document.querySelector("h2");
@@ -264,7 +260,7 @@ function renderRaceStartView(track, racers) {
 			<section id="leaderBoard">
 				${renderCountdown(3)}
 			</section>
-
+      <!-- TODO: Add functionality to add racers here renderRacerCars --> 
 			<section id="accelerate">
 				<h2>Directions</h2>
 				<p>Click the button as fast as you can to make your racer go faster!</p>
