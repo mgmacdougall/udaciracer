@@ -87,9 +87,10 @@ const setupRaceDetails = async () => {
       }),
     });
     const result = await data.json();
-    const { ID} = result;
-    store.race_id = ID; // TODO - update the store with the race id
-    return result
+    const { ID } = result;
+    console.log('>>>',ID);
+    store.race_id = ID-1; // TODO - update the store with the race id
+    return result;
   } catch (err) {
     console.log(err);
   }
@@ -97,11 +98,14 @@ const setupRaceDetails = async () => {
 // This async function controls the flow of the race, add the logic and error handling
 async function handleCreateRace() {
   // render starting UI
- 
-  let raceDetails =  await setupRaceDetails();  //TODO - invoke the API call to create the race, then save the result
-  renderAt("#race", renderRaceStartView(raceDetails.Track,raceDetails.Cars));
+
+  let raceDetails = await setupRaceDetails(); //TODO - invoke the API call to create the race, then save the result
+  renderAt("#race", renderRaceStartView(raceDetails.Track, raceDetails.Cars));
   await runCountdown(); // TODO - call the async function runCountdown
   // TODO - call the async function startRace
+  console.log(">>", store.race_id);
+  await startRace(store.race_id);
+
   // TODO - call the async function runRace
 }
 
@@ -138,7 +142,7 @@ async function runCountdown() {
           h2.parentNode.removeChild(h2);
 
           let nums = document.getElementById("big-numbers");
-          nums.parentNode.removeChild(nums)
+          nums.parentNode.removeChild(nums);
           resolve();
           clearInterval(timerInterval);
         } else {
@@ -260,7 +264,6 @@ function renderRaceStartView(track, racers) {
 			<section id="leaderBoard">
 				${renderCountdown(3)}
 			</section>
-      <!-- TODO: Add functionality to add racers here renderRacerCars --> 
 			<section id="accelerate">
 				<h2>Directions</h2>
 				<p>Click the button as fast as you can to make your racer go faster!</p>
@@ -382,9 +385,7 @@ function createRace(player_id, track_id) {
     ...defaultFetchOpts(),
     dataType: "jsonp",
     body: JSON.stringify(body),
-  })
-    .then((res) => res.json())
-    .catch((err) => console.log("Problem with createRace request::", err));
+  }).catch((err) => console.log("Problem with createRace request::", err));
 }
 
 function getRace(id) {
@@ -392,12 +393,13 @@ function getRace(id) {
 }
 
 function startRace(id) {
-  return fetch(`${SERVER}/api/races/${id}/start`, {
+
+  return fetch(`${SERVER}/api/races/${id}/start`,  {
     method: "POST",
     ...defaultFetchOpts(),
-  })
-    .then((res) => res.json())
-    .catch((err) => console.log("Problem with getRace request::", err));
+  }).catch((err) =>
+    console.log("Problem with getRace request::", err)
+  );
 }
 
 function accelerate(id) {
