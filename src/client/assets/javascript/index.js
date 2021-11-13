@@ -89,7 +89,7 @@ const setupRaceDetails = async () => {
     const result = await data.json();
     const { ID } = result;
     console.log("here", ID);
-    store.race_id = ID - 1; // TODO - update the store with the race id, edge case is if 0 don't subtract
+    store.race_id = ID === 0 ? 1 : ID - 1; // TODO - update the store with the race id, edge case is if 0 don't subtract
     return result;
   } catch (err) {
     console.log(err);
@@ -107,16 +107,32 @@ async function handleCreateRace() {
 
   // TODO - call the async function runRace
 
-  runRace(getRace(store.race_id));
+  runRace(store.race_id);
 }
+
+// Update leader board if not done!
+const updateLeaderBoard = (res) => {
+  renderAt("#leaderBoard", raceProgress(res.positions));
+};
+
+const updateFinalResults = (res) => {
+  renderAt("#race", resultsView(res.positions)), resolve();
+};
+// check if the race is done
+const raceDone = (data) => {
+  console.log(data);
+  data.status === "in-progress"
+    ? updateLeaderBoard(data)
+    : updateFinalResults(data);
+};
 
 function runRace(raceID) {
   return new Promise((resolve) => {
-    const currentRace = setInterval(() => {
-      console.log('here')
-      getRace(raceID.race_id).then((d) => console.log(d)); // DEBUG code for the way to get the data
-    }, 500);
     // TODO - use Javascript's built in setInterval method to get race info every 500ms
+    const currentRace = setInterval(() => {
+      getRace(raceID).then(raceDone); // DEBUG code for the way to get the data
+    }, 500);
+    // clearInterval(currentRace)
     /* 
 		TODO - if the race info status property is "in-progress", update the leaderboard by calling:
 		renderAt('#leaderBoard', raceProgress(res.positions))
@@ -294,7 +310,7 @@ function resultsView(positions) {
 }
 
 function raceProgress(positions) {
-  let userPlayer = positions.find((e) => e.id === store.player_id);
+  let userPlayer = positions.find((e) => e.id == store.player_id);
   userPlayer.driver_name += " (you)";
 
   positions = positions.sort((a, b) => (a.segment > b.segment ? -1 : 1));
