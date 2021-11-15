@@ -88,8 +88,7 @@ const setupRaceDetails = async () => {
     });
     const result = await data.json();
     const { ID } = result;
-    console.log("here", ID);
-    store.race_id = parseInt(ID) === 0 ? 1 : parseInt(ID) - 1; // TODO - update the store with the race id, edge case is if 0 don't subtract
+    store.race_id = parseInt(ID) - 1;
     return result;
   } catch (err) {
     console.log(err);
@@ -106,18 +105,16 @@ async function handleCreateRace() {
   await startRace(store.race_id);
 
   // TODO - call the async function runRace
-
   runRace(store.race_id);
 }
-
 // Update leader board if not done!
 const updateLeaderBoard = (res) => {
-  if (res.status === "in-progress") {
-    renderAt("#leaderBoard", raceProgress(res.positions));
-    return "not";
-  } else {
+  if (res.status === "finished") {
     updateFinalResults(res);
     return "done";
+  } else {
+    renderAt("#leaderBoard", raceProgress(res.positions));
+    return "not";
   }
 };
 
@@ -138,22 +135,7 @@ function runRace(raceID) {
             clearInterval(currentRace);
           }
         });
-
-      // .then(raceDone(data))
     }, 500);
-    // clearInterval(currentRace)
-    /* 
-		TODO - if the race info status property is "in-progress", update the leaderboard by calling:
-		renderAt('#leaderBoard', raceProgress(res.positions))
-	*/
-    /* 
-		TODO - if the race info status property is "finished", run the following:
-
-		clearInterval(raceInterval) // to stop the interval from repeating
-		renderAt('#race', resultsView(res.positions)) // to render the results view
-		reslove(res) // resolve the promise
-	*/
-    // resolve("done");
   }).catch((e) => console.log(e));
 }
 
@@ -217,6 +199,7 @@ function handleSelectTrack(target) {
 function handleAccelerate() {
   console.log("accelerate button clicked");
   // TODO - Invoke the API call to accelerate
+  accelerate(store.race_id);
 }
 
 // HTML VIEWS ------------------------------------------------
@@ -440,6 +423,8 @@ async function startRace(id) {
 
 function accelerate(id) {
   // POST request to `${SERVER}/api/races/${id}/accelerate`
-  // options parameter provided as defaultFetchOpts
-  // no body or datatype needed for this request
+  return fetch(`${SERVER}/api/races/${id}/accelerate`, {
+    method: "POST",
+    ...defaultFetchOpts(),
+  }).catch((err) => console.log(err));
 }
