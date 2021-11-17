@@ -51,7 +51,7 @@ function setupClickHandlers() {
         event.preventDefault();
 
         // start race
-        handleCreateRace();
+        handleCreateRace().catch((err) => console.log("Error creating race", err));
       }
 
       // Handle acceleration click
@@ -164,7 +164,7 @@ async function runCountdown() {
       }, 1000);
     });
   } catch (error) {
-    console.log(error);
+    console.log("Error encountered setting timer ", error);
   }
 }
 
@@ -358,10 +358,7 @@ function defaultFetchOpts() {
 function getTracks() {
   const options = {
     type: "GET",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    ...defaultFetchOpts(),
   };
   return fetch(`${SERVER}/api/tracks`, options)
     .then((res) => res.json())
@@ -374,10 +371,7 @@ function getTracks() {
 function getRacers() {
   const options = {
     type: "GET",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    ...defaultFetchOpts(),
   };
   return fetch(`${SERVER}/api/cars`, options)
     .then((data) => data.json())
@@ -416,6 +410,7 @@ async function startRace(id) {
       method: "POST",
       ...defaultFetchOpts(),
     });
+    return race;
   } catch (error) {
     console.log("Problem with getRace request::", error);
   }
