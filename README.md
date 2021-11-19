@@ -133,19 +133,12 @@ The following were supplied by the course:
 
 The game engine has been compiled down to a binary so that you can run it on any system. Because of this, you cannot edit the API in any way, it is just a black box that we interact with via the API endpoints.
 
-To run the server, locate your operating system and run the associated command in your terminal at the root of the project.
-
-| Your OS               | Command to start the API                                  |
-| --------------------- | --------------------------------------------------------- |
-| Mac                   | `ORIGIN_ALLOWED=http://localhost:3000 ./bin/server-osx`   |
-| Windows               | `ORIGIN_ALLOWED=http://localhost:3000 ./bin/server.exe`   |
-| Linux (Ubuntu, etc..) | `ORIGIN_ALLOWED=http://localhost:3000 ./bin/server-linux` |
+The program was developed on Windows and to get the API Server running the following must be set  at the command line.  Copy and paste these in a Command Prompt:
+set Data_FILE=./data.json
+set ORIGIN_ALLOWED=http://localhost:3000
+start ./bin/server
 
 Note that this process will use your terminal tab, so you will have to open a new tab and navigate back to the project root to start the front end.
 ### Start the Frontend
 
 First, run your preference of `npm install && npm start` or `yarn && yarn start` at the root of this project. Then you should be able to access http://localhost:3000.
-
-## Project Requirements
-
-This starter code base has directions for you in `src/client/assets/javascript/index.js`. There you will be directed to use certain asynchronous methods to achieve tasks. You will know you're making progress as you can play through more and more of the game.
