@@ -1,7 +1,7 @@
 // PROVIDED CODE BELOW (LINES 1 - 80) DO NOT REMOVE
 
 // The store will hold all information needed globally
-var store = {
+let store = {
   track_id: undefined,
   player_id: undefined,
   race_id: undefined,
@@ -73,7 +73,7 @@ async function delay(ms) {
 }
 // ^ PROVIDED CODE ^ DO NOT REMOVE
 const setupRaceDetails = async () => {
-  const { track_id, player_id } = store; // TODO - Get player_id and track_id from the store
+  const { track_id, player_id } = store; 
 
   try {
     const data = await fetch("http://localhost:8000/api/races", {
@@ -94,20 +94,14 @@ const setupRaceDetails = async () => {
     console.log(err);
   }
 };
-// This async function controls the flow of the race, add the logic and error handling
 async function handleCreateRace() {
-  // render starting UI
-
-  let raceDetails = await setupRaceDetails(); //TODO - invoke the API call to create the race, then save the result
+  const raceDetails = await setupRaceDetails(); 
   renderAt("#race", renderRaceStartView(raceDetails.Track, raceDetails.Cars));
-  await runCountdown(); // TODO - call the async function runCountdown
-  // TODO - call the async function startRace
+  await runCountdown(); 
   await startRace(store.race_id);
-
-  // TODO - call the async function runRace
   runRace(store.race_id);
 }
-// Update leader board if not done!
+
 const updateLeaderBoard = (res) => {
   if (res.status === "finished") {
     updateFinalResults(res);
@@ -125,7 +119,6 @@ const updateFinalResults = (res) => {
 
 function runRace(raceID) {
   return new Promise((resolve) => {
-    // TODO - use Javascript's built in setInterval method to get race info every 500ms
     const currentRace = setInterval(() => {
       getRace(raceID)
         .then((d) => updateLeaderBoard(d))
@@ -146,18 +139,16 @@ async function runCountdown() {
     let timer = 3;
 
     return new Promise((resolve) => {
-      // TODO - use Javascript's built in setInterval method to count down once per second
       const timerInterval = setInterval(() => {
         if (timer === 0) {
-          let h2 = document.querySelector("h2");
+          const h2 = document.querySelector("h2");
           h2.parentNode.removeChild(h2);
 
-          let nums = document.getElementById("big-numbers");
+          const nums = document.getElementById("big-numbers");
           nums.parentNode.removeChild(nums);
           resolve();
           clearInterval(timerInterval);
         } else {
-          // run this DOM manipulation to decrement the countdown for the user
           timer--;
           document.getElementById("big-numbers").innerHTML = timer;
         }
@@ -169,36 +160,29 @@ async function runCountdown() {
 }
 
 function handleSelectPodRacer(target) {
-  // remove class selected from all racer options
   const selected = document.querySelector("#racers .selected");
   if (selected) {
     selected.classList.remove("selected");
   }
 
-  // add class selected to current target
   target.classList.add("selected");
 
-  // TODO - save the selected racer to the store
-  store["player_id"] = target.id; // done
+  store["player_id"] = target.id; 
 }
 
 function handleSelectTrack(target) {
-  // remove class selected from all track options
   const selected = document.querySelector("#tracks .selected");
   if (selected) {
     selected.classList.remove("selected");
   }
 
-  // add class selected to current target
   target.classList.add("selected");
 
-  // TODO - save the selected track id to the store
   store.track_id = target.id; // done
 }
 
 function handleAccelerate() {
   console.log("accelerate button clicked");
-  // TODO - Invoke the API call to accelerate
   accelerate(store.race_id);
 }
 
@@ -301,7 +285,7 @@ function resultsView(positions) {
 }
 
 function raceProgress(positions) {
-  let userPlayer = positions.find((e) => e.id == store.player_id);
+  const userPlayer = positions.find((e) => e.id == store.player_id);
   userPlayer.driver_name += " (you)";
 
   positions = positions.sort((a, b) => (a.segment > b.segment ? -1 : 1));
@@ -349,12 +333,7 @@ function defaultFetchOpts() {
   };
 }
 
-// TODO - Make a fetch call (with error handling!) to each of the following API endpoints
 
-/**
- *
- * @returns all the tracks from the API
- */
 function getTracks() {
   const options = {
     type: "GET",
@@ -364,10 +343,7 @@ function getTracks() {
     .then((res) => res.json())
     .catch((err) => console.log(err));
 }
-/**
- *
- * @returns all the  racers that are available.
- */
+
 function getRacers() {
   const options = {
     type: "GET",
@@ -395,7 +371,6 @@ function createRace(player_id, track_id) {
 }
 
 function getRace(id) {
-  // GET request to `${SERVER}/api/races/${id}`
   return fetch(`${SERVER}/api/races/${id}`, {
     method: "GET",
     ...defaultFetchOpts(),
@@ -417,7 +392,6 @@ async function startRace(id) {
 }
 
 function accelerate(id) {
-  // POST request to `${SERVER}/api/races/${id}/accelerate`
   return fetch(`${SERVER}/api/races/${id}/accelerate`, {
     method: "POST",
     ...defaultFetchOpts(),
